@@ -5,6 +5,7 @@
 
 #include "WS2812.pio.h" // This header file gets produced during compilation from the WS2812.pio file
 #include "drivers/logging/logging.h"
+#include "drivers/leds.h"
 
 #define LED_PIN 14
 
@@ -12,10 +13,19 @@ int main()
 {
     stdio_init_all();
 
-    // Initialise PIO0 to control the LED chain
-    uint pio_program_offset = pio_add_program(pio0, &ws2812_program);
-    ws2812_program_init(pio0, 0, pio_program_offset, LED_PIN, 800000, false);
+    // // Initialise PIO0 to control the LED chain
+    // uint pio_program_offset = pio_add_program(pio0, &ws2812_program);
+    // ws2812_program_init(pio0, 0, pio_program_offset, LED_PIN, 800000, false);
     uint32_t led_data [1];
+
+    leds_init (LED_PIN, 12);  // Initialize the LED system with 12 LEDs on pin 14
+
+    change_led(3, 244, 0, 0);
+    change_led(10, 0, 255, 0);
+    update_leds();
+    sleep_ms(1000);
+    reset_leds();  // Reset all LEDs to off
+
 
     for (;;) {
         // Test the log system
