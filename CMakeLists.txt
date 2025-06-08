@@ -29,15 +29,20 @@ if(CrossCompiling)
 
     add_executable(labs)
     target_sources(labs 
-        PUBLIC
+        PRIVATE
         src/main.cpp
+        src/tasks/pattern.cpp
+        src/tasks/mode_switch.cpp
+        src/tasks/spirit_level.cpp
         src/drivers/logging/logging.cpp
         src/drivers/leds.cpp
-        
+        src/drivers/lis3dh.cpp
+
     )
     target_include_directories(labs
         PUBLIC 
-        src/
+        src
+        src/drivers
     )
 
     pico_set_program_name(labs "cc3501-labs")
