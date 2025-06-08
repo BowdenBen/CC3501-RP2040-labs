@@ -10,7 +10,7 @@
 
 #include "drivers/lis3dh.h"
 
-// External task functions
+// External task functions, instead of using header files for tasks
 extern void mode_switch_task();
 extern int get_mode();  // Return type for enum Mode
 extern void run_led_pattern();
