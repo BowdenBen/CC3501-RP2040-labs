@@ -59,6 +59,15 @@ void spirit_level_task() {
     LIS3DH_read_raw(&x_raw, &y_raw, &z_raw);
     LIS3DH_convert_to_g(x_raw, y_raw, z_raw, &gx, &gy, &gz);
 
+    float tilt_mag = sqrtf(gx * gx + gy * gy);
+
+    if (tilt_mag < 0.05f) {  // ≈ Level (within ±2.8°)
+        set_all(0, 255, 0);   // Bright green
+        update_leds();
+        sleep_ms(200);        // Stay on for visual feedback
+        return;
+    }
+
     reset_leds();
 
     for (int i = 0; i < 12; ++i) {
@@ -69,5 +78,5 @@ void spirit_level_task() {
     }
 
     update_leds();
-    sleep_ms(50);
+    sleep_ms(100); // Update rate for spirit level task, 50ms = very responsive, 100ms = smoother but less responsive.
 }
