@@ -59,9 +59,9 @@ void spirit_level_task() {
     LIS3DH_read_raw(&x_raw, &y_raw, &z_raw);
     LIS3DH_convert_to_g(x_raw, y_raw, z_raw, &gx, &gy, &gz);
 
-    float tilt_mag = sqrtf(gx * gx + gy * gy);
+    float tilt_mag = sqrtf(gx * gx + gy * gy); // To calculate the length (or "tilt strength") of that 2D vector, use the Pythagorean theorem
 
-    if (tilt_mag < 0.05f) {  // ≈ Level (within ±2.8°)
+    if (tilt_mag < 0.05f) {  // ≈ Level (within ±2.8° tilt),θ=sin^(-1)(0.05)≈2.87°
         set_all(0, 255, 0);   // Bright green
         update_leds();
         sleep_ms(200);        // Stay on for visual feedback
