@@ -9,17 +9,17 @@
 
 // Predefined unit direction vectors for each LED (in U shape)
 static float LED_VECTORS[12][2] = {
-    { 1,  1},  // LED 0: used to be up-left → now right-up
-    { 1,  0},  // LED 1: up → now right
-    { 1, -1},  // LED 2: up-right → now right-down
+    { 1,  1},  // LED 0: right-up
+    { 1,  0},  // LED 1: right
+    { 1, -1},  // LED 2: right-down
     { 1, -1},  // LED 3: same as 2
-    { 0, -1},  // LED 4: right → now down
-    { 0, -1},  // LED 5: right → now down
-    { 0, -1},  // LED 6: right → now down
-    { 0, -1},  // LED 7: right → now down
-    {-1, -1},  // LED 8: bottom-right → now left-down
-    {-1,  0},  // LED 9: bottom → now left
-    {-1,  1},  // LED 10: bottom-left → now left-up
+    { 0, -1},  // LED 4: down
+    { 0, -1},  // LED 5: down
+    { 0, -1},  // LED 6: down
+    { 0, -1},  // LED 7: down
+    {-1, -1},  // LED 8: left-down
+    {-1,  0},  // LED 9: left
+    {-1,  1},  // LED 10: left-up
     {-1,  1}   // LED 11: same as 10
 };
 
