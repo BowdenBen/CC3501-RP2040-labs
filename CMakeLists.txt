@@ -37,6 +37,7 @@ if(CrossCompiling)
         src/drivers/logging/logging.cpp
         src/drivers/leds.cpp
         src/drivers/lis3dh.cpp
+        src/drivers/microphone.cpp
 
     )
     target_include_directories(labs
