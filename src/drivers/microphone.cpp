@@ -1,48 +1,51 @@
+#include <stdio.h>
+#include "pico/stdlib.h"
+#include "leds.h"
+#include "drivers/logging/logging.h"
+#include "drivers/board.h"
+#include "microphone.h"
+#include "hardware/i2c.h"
+#include "hardware/uart.h"
+#include "hardware/adc.h"
+
+#define SAMPLE_RATE 44100    // Desired sample rate in Hz
+#define FFT_LEN 1024 // Length of the FFT
 
 
-/******************************************************************************
- * Microphone Driver Design Requirements and Implementation Notes
- ******************************************************************************/
+void microphone_init(void) {    
+    adc_init();
+    adc_gpio_init( MIC_PIN);
+    adc_select_input( ADC_NUM);
+    adc_fifo_get_blocking(true, true, 12, false, false); // Enable FIFO, shift 8 bits, error bit, etc
 
-/*
- * Audio Sampling
- * --------------
- * - The microphone must capture audio at a fixed sample rate of 44.1 kHz.
- * - Each FFT processing cycle requires a buffer of 1024 audio samples.
- * - The audio samples must be converted and stored in Q15 fixed-point format.
- */
 
-/*
- * Buffering and Timing
- * --------------------
- * - Implement a circular buffer to continuously capture microphone input.
- * - After every 1024 new samples, trigger an FFT processing task.
- * - This trigger can be implemented using DMA complete interrupt or timer ISR.
- */
+    // Set up ADC clock divider for 44.1 kHz sample rate
+    uint16_t adc_clkdiv = 48000000 / SAMPLE_RATE -1; // 48 MHz system clock divided to get 44.1 kHz
+    adc_set_clkdiv(adc_clkdiv);
+    // Configure the ADC FIFO
+    adc_fifo_setup(
+        true,    // Write each completed conversion to the FIFO
+        false,    // Enable DMA data request (DREQ)
+        0,       // DREQ at least 1 sample in FIFO
+        false,   // No error bit
+        false    // No byte-shifting
+    );
 
-/*
- * Preprocessing
- * -------------
- * - Before applying FFT, apply a Hanning window to the 1024-sample frame.
- * - Use Q15 arithmetic for the window function to maintain consistency.
- * - The Hanning coefficients must also be represented in Q15 format.
- */
+    printf("Microphone initialized with sample rate: 44.1 kHz\n");    
+}
 
-/*
- * FFT Processing
- * --------------
- * - Use ARM CMSIS-DSP real FFT functions for fast and efficient processing.
- * - Functions to use:
- *     - arm_rfft_q15() for performing the real FFT
- *     - arm_cmplx_mag_squared_q15() to compute magnitude squared (energy)
- * - Be cautious with scaling to avoid overflow in Q15 arithmetic.
- */
+void __not_in_flash_func(adc_capture)(uint16_t *buf, size_t count) {
+    adc_run(true);
+    for (size_t i = 0; i < count; i = i + 1)
+        buf[i] = adc_fifo_get_blocking();
+    adc_run(false);
+    adc_fifo_drain();
+}
 
-/*
- * Fixed-Point Arithmetic
- * ----------------------
- * - Q15 format is required for FFT input/output and windowing.
- * - For intermediate calculations, especially if additional headroom is needed,
- *   Q31 format may be used.
- * - Floating-point operations are prohibited due to hardware limitations on RP2040.
- */
+
+// void microphone_read(int16_t *buffer, int num_samples) { 
+
+
+void microphone_shutdown(void) {
+    printf("Microphone shutdown complete.\n");
+}

@@ -23,6 +23,11 @@ void LIS3DH_init() {
 }
 
 void read_from_register(uint8_t reg, uint8_t *data, size_t length) {
+
+    // checvk iof reasding multiple bytes
+    if (length > 1) {
+        reg |= 0x80; // Set auto-increment bit for multiple byte reads
+    }
     i2c_write_blocking(I2c_INSTANCE, LIS3DH_ADDRESS, &reg, 1, false);
     i2c_read_blocking(I2c_INSTANCE, LIS3DH_ADDRESS, data, length, false);
 }
@@ -34,7 +39,7 @@ void write_to_register(uint8_t reg, uint8_t value) {
 
 void LIS3DH_read_raw(int16_t* x, int16_t* y, int16_t* z) {
     uint8_t buffer[6];
-    read_from_register(0x28 | 0x80, buffer, 6);  // auto-increment
+    read_from_register(0x28, buffer, 6);  // auto-increment
 
     *x = (int16_t)((buffer[1] << 8) | buffer[0]) >> 4;
     *y = (int16_t)((buffer[3] << 8) | buffer[2]) >> 4;

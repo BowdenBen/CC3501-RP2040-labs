@@ -7,7 +7,7 @@
 #include "drivers/logging/logging.h"
 #include "drivers/leds.h"
 #include "drivers/board.h"
-
+#include "drivers/microphone.h"
 #include "drivers/lis3dh.h"
 
 // External task functions, instead of using header files for tasks
@@ -24,6 +24,10 @@ enum Mode {
 
 int main() {
     stdio_init_all();
+
+    microphone_init(); // Initialize the microphone
+
+
 
     // Setup GPIO15 user switch
     gpio_init(BUTTON_PIN);

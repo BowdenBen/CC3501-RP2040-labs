@@ -13,6 +13,7 @@
 #define BUTTON_PIN    15
 
 // microphone configuration
+#define ADC_NUM        0
 #define MIC_PIN        26
 #define MIC_SAMPLE_RATE 44100
 #define MIC_BUFFER_SIZE 1024
