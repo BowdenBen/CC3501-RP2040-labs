@@ -1,6 +1,6 @@
 #include "drivers/lis3dh.h"
 #include "drivers/leds.h"
-#include "board.h"
+#include "drivers/board.h"
 #include "pico/stdlib.h"
 #include <math.h>
 
