@@ -29,17 +29,16 @@ if(CrossCompiling)
 
     add_executable(labs)
     target_sources(labs 
-        PUBLIC
+        PRIVATE
         src/main.cpp
+        src/tasks/pattern.cpp
+        src/tasks/mode_switch.cpp
+        src/tasks/spirit_level.cpp
         src/drivers/logging/logging.cpp
-        src/drivers/lis3dh.cpp   
-        src/drivers/HDC2010/HDC2010.cpp
-
     )
     target_include_directories(labs
         PUBLIC 
         src/
-        src/drivers
     )
 
     pico_set_program_name(labs "cc3501-labs")
@@ -64,6 +63,7 @@ if(CrossCompiling)
         hardware_watchdog
         hardware_clocks
         hardware_pwm
+        hardware_adc
     )
 
     pico_add_extra_outputs(labs)

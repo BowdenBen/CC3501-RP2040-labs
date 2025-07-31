@@ -4,7 +4,6 @@
 #include "drivers/board.h"
 #include "lis3dh.h"
 #include "hardware/i2c.h"
-#include "hardware/uart.h"
 
 
 
