@@ -32,7 +32,8 @@ if(CrossCompiling)
         PUBLIC
         src/main.cpp
         src/drivers/logging/logging.cpp
-        src/drivers/lis3dh.cpp    # ✅ Add accelerometer driver
+        src/drivers/lis3dh.cpp   
+        src/drivers/HDC2010/HDC2010.cpp
 
     )
     target_include_directories(labs

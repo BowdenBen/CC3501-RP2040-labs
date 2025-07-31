@@ -8,6 +8,7 @@
 #include "drivers/board.h"  // Your board-specific config
 #include <math.h>
 #include "hardware/i2c.h"
+#include "drivers/HDC2010/hdc2010.h" // HDC2010 driver
 
 #define INPUT_BUFFER_SIZE 64
 
@@ -92,6 +93,42 @@ void accelerometer_test()
     }
 }
 
+void hdc2010_test()
+{
+    printf("\nInitializing HDC2010 sensor...\n");
+    HDC2010_init();
+    printf("Streaming temperature and humidity (press any key to return to menu)\n");
+
+    while (true)
+    {
+        // Trigger a new measurement
+        uint8_t trigger[] = { 0x0F, 0x01 };  // MEAS_CONF register: bit0 = trigger
+        i2c_write_blocking(I2c_INSTANCE, HDC2010_ADDR, trigger, 2, false);
+        sleep_ms(50); // allow time for measurement to complete
+
+        float temperature, humidity;
+        if (HDC2010_read(&temperature, &humidity))
+        {
+            printf("Temperature: %.2f°C  Humidity: %.2f%%\n", temperature, humidity);
+        }
+        else
+        {
+            printf("Failed to read from HDC2010 sensor.\n");
+        }
+
+        sleep_ms(1000); // 1 Hz sampling rate
+
+        int ch = getchar_timeout_us(0);
+        if (ch != PICO_ERROR_TIMEOUT)
+        {
+            printf("Stopping HDC2010 test, returning to menu...\n");
+            flush_input();
+            break;
+        }
+    }
+}
+
+
 int main()
 
 {
@@ -119,7 +156,9 @@ int main()
         printf("\nSelect an option:\n");
         printf("1 - GPIO Control\n");
         printf("2 - Accelerometer Test\n");
+        printf("3 - HDC2010 Sensor Test\n");
         printf("Enter choice: ");
+
         read_line(input, INPUT_BUFFER_SIZE);
         trim(input);
 
@@ -181,6 +220,10 @@ int main()
         else if (strcmp(input, "2") == 0)
         {
             accelerometer_test();
+        }
+        else if (strcmp(input, "3") == 0)
+        {
+            hdc2010_test();
         }
         else
         {
