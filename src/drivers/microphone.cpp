@@ -1,51 +1,55 @@
-#include <stdio.h>
-#include "pico/stdlib.h"
-#include "leds.h"
-#include "drivers/logging/logging.h"
-#include "drivers/board.h"
 #include "microphone.h"
-#include "hardware/i2c.h"
-#include "hardware/uart.h"
+#include "drivers/board.h"    // defines MIC_PIN and ADC_NUM
+#include "pico/stdlib.h"
 #include "hardware/adc.h"
+#include <stdio.h>
 
-#define SAMPLE_RATE 44100    // Desired sample rate in Hz
-#define FFT_LEN 1024 // Length of the FFT
+#define SAMPLE_RATE 44100U
 
-
-void microphone_init(void) {    
+void microphone_init(void) {
+    // 1) Init ADC hardware
     adc_init();
-    adc_gpio_init( MIC_PIN);
-    adc_select_input( ADC_NUM);
-    adc_fifo_get_blocking(true, true, 12, false, false); // Enable FIFO, shift 8 bits, error bit, etc
+    // 2) Configure the GPIO pin for analog input
+    adc_gpio_init(MIC_PIN);
+    // 3) Select the ADC input channel
+    adc_select_input(ADC_NUM);
 
+    // 4) Compute clkdiv so that T = (1+clkdiv)/48 MHz = 1/44 100 Hz
+    float clkdiv = (48000000.0f / (float)SAMPLE_RATE) - 1.0f;
+    adc_set_clkdiv(clkdiv);
 
-    // Set up ADC clock divider for 44.1 kHz sample rate
-    uint16_t adc_clkdiv = 48000000 / SAMPLE_RATE -1; // 48 MHz system clock divided to get 44.1 kHz
-    adc_set_clkdiv(adc_clkdiv);
-    // Configure the ADC FIFO
+    // 5) FIFO setup: free-run into FIFO, threshold=1, no DMA, no shift
     adc_fifo_setup(
-        true,    // Write each completed conversion to the FIFO
-        false,    // Enable DMA data request (DREQ)
-        0,       // DREQ at least 1 sample in FIFO
-        false,   // No error bit
-        false    // No byte-shifting
+        /* en   */ true,   // write each conversion to FIFO
+        /* dreq */ false,  // don't generate DMA request
+        /* thresh */ 1,    // DREQ when >=1 sample
+        /* err bit */ false,
+        /* shift */ false
     );
 
-    printf("Microphone initialized with sample rate: 44.1 kHz\n");    
+    printf("[MIC] ADC init @ %u Hz\n", SAMPLE_RATE);
 }
 
-void __not_in_flash_func(adc_capture)(uint16_t *buf, size_t count) {
+int microphone_read_samples(int16_t *buffer, int max_samples) {
+    if (!buffer || max_samples <= 0) return 0;
+
+    // Start continuous sampling
     adc_run(true);
-    for (size_t i = 0; i < count; i = i + 1)
-        buf[i] = adc_fifo_get_blocking();
+
+    // Block until we get exactly max_samples
+    for (int i = 0; i < max_samples; i++) {
+        uint16_t raw = adc_fifo_get_blocking();
+        buffer[i] = (int16_t)raw;
+    }
+
+    // Stop sampling and clear FIFO
     adc_run(false);
     adc_fifo_drain();
+
+    return max_samples;
 }
 
-
-// void microphone_read(int16_t *buffer, int num_samples) { 
-
-
 void microphone_shutdown(void) {
-    printf("Microphone shutdown complete.\n");
+    // Nothing to do on RP2040, but log for sanity
+    printf("[MIC] ADC shutdown\n");
 }
