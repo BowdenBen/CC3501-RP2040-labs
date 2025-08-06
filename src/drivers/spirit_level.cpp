@@ -1,6 +1,5 @@
 #include "drivers/lis3dh.h"
-#include "drivers/leds.h"
-#include "drivers/board.h"
+#include "board.h"
 #include "pico/stdlib.h"
 #include <math.h>
 
@@ -50,33 +49,35 @@ uint8_t vector_to_brightness(float gx, float gy, float dx, float dy) {
     return (uint8_t)(dot * INTENSITY_SCALE);
 }
 
-void spirit_level_task() {
-    int16_t x_raw, y_raw, z_raw;
-    float gx, gy, gz;
+// void spirit_level_task() {
+//     int16_t x_raw, y_raw, z_raw;
+//     float gx, gy, gz;
 
-    normalize_vectors();  // run once
+//     normalize_vectors();  // run once
 
-    LIS3DH_read_raw(&x_raw, &y_raw, &z_raw);
-    LIS3DH_convert_to_g(x_raw, y_raw, z_raw, &gx, &gy, &gz);
+//     LIS3DH_read_raw(&x_raw, &y_raw, &z_raw);
+//     LIS3DH_convert_to_g(x_raw, y_raw, z_raw, &gx, &gy, &gz);
 
-    float tilt_mag = sqrtf(gx * gx + gy * gy); // To calculate the length (or "tilt strength") of that 2D vector, use the Pythagorean theorem
+//     LIS3DH_output_raw_uart(); // Output raw data to UART for debugging
 
-    if (tilt_mag < 0.05f) {  // ≈ Level (within ±2.8° tilt),θ=sin^(-1)(0.05)≈2.87°
-        set_all(0, 255, 0);   // Bright green
-        update_leds();
-        sleep_ms(200);        // Stay on for visual feedback
-        return;
-    }
+//     float tilt_mag = sqrtf(gx * gx + gy * gy); // To calculate the length (or "tilt strength") of that 2D vector, use the Pythagorean theorem
 
-    reset_leds();
+//     if (tilt_mag < 0.05f) {  // ≈ Level (within ±2.8° tilt),θ=sin^(-1)(0.05)≈2.87°
+//         set_all(0, 255, 0);   // Bright green
+//         update_leds();
+//         sleep_ms(200);        // Stay on for visual feedback
+//         return;
+//     }
 
-    for (int i = 0; i < 12; ++i) {
-        float dx = LED_VECTORS[i][0];
-        float dy = LED_VECTORS[i][1];
-        uint8_t brightness = vector_to_brightness(gx, gy, dx, dy);
-        change_led(i, brightness, brightness, brightness);
-    }
+//     reset_leds();
 
-    update_leds();
-    sleep_ms(100); // Update rate for spirit level task, 50ms = very responsive, 100ms = smoother but less responsive.
-}
+//     for (int i = 0; i < 12; ++i) {
+//         float dx = LED_VECTORS[i][0];
+//         float dy = LED_VECTORS[i][1];
+//         uint8_t brightness = vector_to_brightness(gx, gy, dx, dy);
+//         change_led(i, brightness, brightness, brightness);
+//     }
+
+//     update_leds();
+//     sleep_ms(100); // Update rate for spirit level task, 50ms = very responsive, 100ms = smoother but less responsive.
+// }

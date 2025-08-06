@@ -20,3 +20,6 @@ void LIS3DH_read_raw(int16_t *x, int16_t *y, int16_t *z);
 
 // Convert raw accelerometer data to g's
 void LIS3DH_convert_to_g(int16_t raw_x, int16_t raw_y, int16_t raw_z, float *gx, float *gy, float *gz);
+
+// Outputs raw accelerometer data to UART for debugging
+void LIS3DH_output_raw_uart(void);

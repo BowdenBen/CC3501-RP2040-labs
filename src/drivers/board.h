@@ -5,9 +5,9 @@
 #define NUM_LEDS      12
 
 // I2C configuration for Accelerometer
-#define I2C_SDA_PIN  16
-#define I2C_SCL_PIN  17
-#define I2c_INSTANCE i2c0
+#define I2C_SDA_PIN  2
+#define I2C_SCL_PIN  3
+#define I2c_INSTANCE i2c1
 
 // User button configuration
 #define BUTTON_PIN    15

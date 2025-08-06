@@ -56,15 +56,12 @@ if(CrossCompiling)
         src/tasks/mode_switch.cpp
         src/tasks/spirit_level.cpp
         src/drivers/logging/logging.cpp
-        src/drivers/leds.cpp
         src/drivers/lis3dh.cpp
-        src/drivers/microphone.cpp
-
+        src/drivers/HDC2010/hdc2010.cpp
     )
     target_include_directories(labs
         PUBLIC 
-        src
-        src/drivers
+        src/
     )
 
     pico_set_program_name(labs "cc3501-labs")
