@@ -53,11 +53,11 @@ if(CrossCompiling)
         PRIVATE
         src/main.cpp
         src/tasks/pattern.cpp
-        src/tasks/mode_switch.cpp
         src/tasks/spirit_level.cpp
         src/drivers/logging/logging.cpp
         src/drivers/lis3dh.cpp
         src/drivers/HDC2010/hdc2010.cpp
+        src/tasks/microphone_app.cpp
     )
     target_include_directories(labs
         PUBLIC 
@@ -87,6 +87,7 @@ if(CrossCompiling)
         hardware_clocks
         hardware_pwm
         hardware_adc
+        CMSISDSP # CMSIS-DSP library
     )
 
     pico_add_extra_outputs(labs)
